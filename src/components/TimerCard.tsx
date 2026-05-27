@@ -12,9 +12,11 @@ interface TimerCardProps {
   surpriseMode: boolean;
   /** Fires each time a beep plays — used to trigger the pulse animation */
   beepTick: number;
+  showSettings: boolean;
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
+  onToggleSettings: () => void;
 }
 
 const formatTime = (remainingSec: number): string => {
@@ -54,9 +56,11 @@ export const TimerCard = ({
   beepsPlayed,
   surpriseMode,
   beepTick,
+  showSettings,
   onStart,
   onPause,
   onReset,
+  onToggleSettings,
 }: TimerCardProps) => {
   const remaining = Math.max(0, duration - elapsedSec);
   const progress = elapsedSec / duration;
@@ -92,14 +96,8 @@ export const TimerCard = ({
   return (
     <section
       aria-label="Timer"
-      className="glass-card flex flex-col items-center gap-8 py-8 px-6 relative overflow-hidden"
+      className="glass-card flex flex-col items-center gap-8 py-8 px-6"
     >
-      {/* Gradient border glow */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-[-1px] rounded-[inherit] bg-gradient-to-br from-violet-600/25 via-cyan-500/15 to-transparent pointer-events-none -z-10"
-      />
-
       {/* Circular ring + center */}
       <div
         role="timer"
@@ -150,37 +148,33 @@ export const TimerCard = ({
         aria-label="Timer controls"
         className="flex gap-3 items-center flex-wrap justify-center"
       >
-        {/* Start / Resume / Restart */}
-        {!isRunning && (
-          <button
-            id="btn-start"
-            onClick={onStart}
-            className="btn btn-primary"
-            aria-label={
-              isFinished
-                ? "Restart timer"
+        {/* Start / Pause / Resume / Restart */}
+        <button
+          id="btn-start-pause"
+          onClick={isRunning ? onPause : onStart}
+          className={`btn ${isRunning ? "btn-secondary" : "btn-primary"}`}
+          aria-label={
+            isFinished
+              ? "Restart timer"
+              : isRunning
+                ? "Pause timer"
                 : isPaused
                   ? "Resume timer"
                   : "Start timer"
-            }
-          >
-            <span aria-hidden="true">{isFinished ? "↺" : "▶"}</span>
-            <span>
-              {isFinished ? "Restart" : isPaused ? "Resume" : "Start"}
-            </span>
-          </button>
-        )}
-
-        {/* Pause */}
-        <button
-          id="btn-pause"
-          onClick={onPause}
-          disabled={!isRunning}
-          className="btn btn-secondary"
-          aria-label="Pause timer"
+          }
         >
-          <span aria-hidden="true">⏸</span>
-          <span>Pause</span>
+          <span aria-hidden="true">
+            {isFinished ? "↺" : isRunning ? "⏸" : "▶"}
+          </span>
+          <span>
+            {isFinished
+              ? "Restart"
+              : isRunning
+                ? "Pause"
+                : isPaused
+                  ? "Resume"
+                  : "Start"}
+          </span>
         </button>
 
         {/* Reset */}
@@ -194,6 +188,47 @@ export const TimerCard = ({
           <span aria-hidden="true">↺</span>
           <span>Reset</span>
         </button>
+
+        {/* Settings toggle */}
+        <button
+          id="btn-settings"
+          onClick={onToggleSettings}
+          className={`btn btn-ghost ${showSettings ? "text-cyan-400" : ""}`}
+          aria-label={showSettings ? "Hide settings" : "Show settings"}
+          aria-pressed={showSettings}
+        >
+          <span aria-hidden="true">⚙</span>
+          <span>Settings</span>
+        </button>
+      </div>
+
+      {/* Legend */}
+      <div aria-label="Legend" className="flex gap-5 justify-center">
+        {[
+          {
+            dot: "w-2 h-2 bg-cyan-400/50 border border-cyan-400/80",
+            label: "Pending",
+          },
+          {
+            dot: "w-2 h-2 bg-emerald-400 border border-emerald-400",
+            label: "Played",
+          },
+          {
+            dot: "w-2 h-2 bg-white border border-white shadow-[0_0_6px_white]",
+            label: "Next",
+          },
+        ].map(({ dot, label }) => (
+          <span
+            key={label}
+            className="flex items-center gap-1.5 text-xs text-slate-500"
+          >
+            <span
+              aria-hidden="true"
+              className={`inline-block rounded-full ${dot}`}
+            />
+            {label}
+          </span>
+        ))}
       </div>
     </section>
   );

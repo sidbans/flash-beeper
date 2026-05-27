@@ -4,15 +4,16 @@ export const Footer = () => {
       aria-label="Footer"
       className="text-xs text-slate-500 text-center pb-4"
     >
-      Built with the Web Audio API ·{" "}
+      Made with ❤️ by Siddhant Bansal - No ads, no tracking, free and open
+      source. All your data is local.{" "}
       <a
-        href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API"
+        href="https://github.com/sidbans/flash-beeper"
         target="_blank"
-        rel="noopener noreferrer"
-        className="text-cyan-500 hover:underline"
+        className="text-cyan-400 hover:underline"
       >
-        MDN Docs
+        Source code
       </a>
+      .
     </footer>
   );
 };

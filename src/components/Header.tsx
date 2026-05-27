@@ -12,9 +12,6 @@ export const Header = () => {
           Flash<span className="text-cyan-400">Beeper</span>
         </span>
       </div>
-      <p className="text-[0.7rem] uppercase tracking-widest text-slate-500">
-        Random interval trainer
-      </p>
     </header>
   );
 };

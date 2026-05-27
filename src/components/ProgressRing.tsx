@@ -69,36 +69,47 @@ export const ProgressRing = ({
       />
 
       {/* Beep markers */}
-      {!surpriseMode &&
-        beepTimes.map((t, i) => {
-          const angle = (t / duration) * 2 * Math.PI - Math.PI / 2;
-          const x = cx + RADIUS * Math.cos(angle);
-          const y = cy + RADIUS * Math.sin(angle);
-          const isPlayed = i < nextBeepIdx;
-          const isNext = i === nextBeepIdx;
-          const r = isNext ? 6 : isPlayed ? 5.5 : 5;
+      {beepTimes.map((t, i) => {
+        // Angle starts at 0 (3 o'clock in SVG coords), but SVG is rotated -90deg
+        // so it appears at 12 o'clock, matching the progress arc start
+        const angle = (t / duration) * 2 * Math.PI;
+        const x = cx + RADIUS * Math.cos(angle);
+        const y = cy + RADIUS * Math.sin(angle);
+        const isPlayed = i < nextBeepIdx;
+        const isNext = i === nextBeepIdx;
+        const hide = surpriseMode && !isPlayed;
 
-          return (
-            <circle
-              key={i}
-              cx={x.toFixed(2)}
-              cy={y.toFixed(2)}
-              r={r}
-              className={
-                isPlayed
-                  ? "fill-emerald-400"
-                  : isNext
-                    ? "fill-white"
-                    : "fill-cyan-400 opacity-60"
-              }
-              style={
-                isNext
-                  ? { filter: "drop-shadow(0 0 5px rgba(255,255,255,0.8))" }
-                  : undefined
-              }
-            />
-          );
-        })}
+        if (hide) return null;
+
+        // Match Timeline.tsx sizes: w-2.5 h-2.5 (5px), with scale for played/next
+        const baseR = 5;
+        const r = isNext ? baseR * 1.3 : isPlayed ? baseR * 0.8 : baseR;
+
+        return (
+          <circle
+            key={i}
+            cx={x.toFixed(2)}
+            cy={y.toFixed(2)}
+            r={r}
+            stroke={
+              isPlayed ? "#10b981" : isNext ? "#ffffff" : "rgba(6,182,212,0.8)"
+            }
+            strokeWidth={2}
+            className={
+              isPlayed
+                ? "fill-emerald-400"
+                : isNext
+                  ? "fill-white"
+                  : "fill-cyan-400/50"
+            }
+            style={
+              isPlayed
+                ? { filter: "drop-shadow(0 0 8px rgba(16,185,129,0.6))" }
+                : undefined
+            }
+          />
+        );
+      })}
     </svg>
   );
 };
